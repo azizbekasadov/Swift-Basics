@@ -12,7 +12,7 @@ class Monster {
     static let isTerrifying = true
     
     var town: Town?
-    var name = "Monster"
+    var name: String
     
     /*final*/ func terrorizeTown() {
         if town != nil {
@@ -21,6 +21,12 @@ class Monster {
             print("\(name) hasn't found a town to terrorize yet...")
         }
     }
+    
+    required init(town: Town?, monsterName: String) {
+        self.town = town
+        name = monsterName
+    }
+    
     
     class func makeSpookyNoise() -> String {
         return "Brains..."
@@ -33,8 +39,8 @@ class Monster {
 
 // Subclass
 class Zombie: Monster {
-    var walksWithLimp = true
-    /*internal*/ private(set) var isFallingApart = false
+    var walksWithLimp: Bool
+    /*internal*/ private(set) var isFallingApart: Bool
     
 //  You use the syntax internal private(set) to specify that the getter should be internal and the
 //  setter should be private. You could use public, internal, or private for either, with one restriction:
@@ -51,11 +57,36 @@ class Zombie: Monster {
         walksWithLimp = false
     }
     
+    // Designated init
+    init(limp: Bool, fallingApart: Bool, town: Town?, monsterName: String) {
+            walksWithLimp = limp
+            isFallingApart = fallingApart
+            super.init(town: town, monsterName: monsterName)
+    }
+
+    convenience init(limp: Bool, fallingApart: Bool) {
+        self.init(limp: limp, fallingApart: fallingApart, town: nil, monsterName: "Fred")
+        if walksWithLimp {
+            print("This zombie has a bad knee.")
+        }
+    }
+    
+    // Required Init
+    required init(town: Town?, monsterName: String) {
+        walksWithLimp = false
+        isFallingApart = false
+        super.init(town: town, monsterName: monsterName)
+    }
+    
     //    final class func makeSpookyNoise() -> String {
     //        return "Brains..."
     //    }
     override class var spookyNoise: String {
         return "Brains..."
+    }
+    
+    deinit {
+        print("Zombie \(name) is no longer with us.")
     }
 }
 // super is a feature of inheritance, it is not available to enums or structs, which do not support inheritance. It is invoked to borrow or override functionality from a superclass.
@@ -84,7 +115,7 @@ class Vampire: Monster {
         town?.changePopulation(by: -1)
         
         if let population = town?.population, population > 1 {
-            thralls.append(Vampire())
+            thralls.append(Vampire(town: town, monsterName: "BRaBRa"))
         }
     }
 }
@@ -121,3 +152,17 @@ struct Square {
 // • property observers
 // • type properties
 // • access control
+
+// MARK: Automatic initializer inheritance
+// Classes do not typically inherit their superclass’s initializers. This feature of Swift is
+// intended to prevent subclasses from inadvertently providing initializers that do not set values
+// on all the properties of the subclass type, because subclasses frequently add properties that
+// do not exist in the superclass. Requiring subclasses to have their own initializers helps
+// prevent types from being partially initialized with incomplete initializers.
+
+// If your subclass provides default values for all new properties it adds, then there are two scenarios in which it will inherit its superclass’s initializers:
+// • If the subclass does not implement any designated initializers, it will inherit its superclass’s designated initializers.
+// • If the subclass provides all its superclass’s designated initializers – either by overriding or by inheriting them – it will inherit all the superclass’s convenience initializers.
+
+// MARK: convenience keyword
+// This keyword tells the compiler that the initializer will need to delegate to another initializer on the class, eventually calling to a designated initializer.

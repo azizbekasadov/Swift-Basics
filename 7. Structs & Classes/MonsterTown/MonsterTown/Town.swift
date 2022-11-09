@@ -9,10 +9,10 @@ import Foundation
 
 struct Town {
     //    variables are called properties
-    let region = "Middle"
+    let region: String
     var mayor: Mayor
     
-    var population = 5_422 {
+    var population: Int {
         didSet(oldPopulation) {
             mayor.increaseAnxietyLevel()
             if oldPopulation > population {
@@ -22,7 +22,7 @@ struct Town {
         }
     }
                   
-    var numberOfStoplights = 4
+    var numberOfStoplights: Int
     
     // MARK: Nested Types
     // Nested types are types that are defined within another enclosing type. They are often used to support the functionality of a type and are not intended to be used separately from that type. Enumerations are frequently nested.
@@ -65,8 +65,35 @@ struct Town {
     
 //    You must provide computed properties with an explicit type annotation so that the compiler can verify that the computed value is of the correct type.
     
+    // MARK: Custom Initializers
+    init(region: String, population: Int, stoplights: Int, mayor: Mayor) {
+        self.region = region
+        self.population = population
+        self.mayor = mayor
+        numberOfStoplights = stoplights
+    }
+    // MARK: Init Delegation
+    init(population: Int, stoplights: Int, mayor: Mayor) {
+        self.init(region: "N/A", population: population, stoplights: stoplights, mayor: mayor)
+    }
+    
+    // MARK: Failable init
+    init?(region: String, population: Int, _stoplights: Int, mayor: Mayor) {
+        guard population > 0 else {
+            return nil
+        }
+        self.region = region
+        self.population = population
+        self.mayor = mayor
+        numberOfStoplights = _stoplights
+    }
+    
+    //  The Swift compiler allows you to set a value for a constant property one time during
+//  initialization. Remember, the goal of initialization is to ensure that a type’s properties
+//  have values after initialization completes.
+    
     func printDescription() {
-        print("Population: \(self.population); \nnumber of stoplights: \(self.numberOfStoplights)")
+        print("Population: \(self.population); \nnumber of stoplights: \(self.numberOfStoplights); region: \(region)")
     }
     
     mutating func changePopulation(by amount: Int) {
@@ -107,3 +134,16 @@ struct Town {
 // Value types (structures and enumerations) can take both stored and computed type properties. As with type methods, type properties on value types begin with the static keyword.
 // Classes can also have stored and computed type properties, which use the same static syntax as structs. Subclasses cannot override a type property from their superclass.
 // If you want a subclass to be able to provide its own implementation of the property, you use the class keyword instead.
+
+// MARK: Initializer delegation
+// You can define initializers to call other initializers on the same type. This procedure is called initializer delegation. It is typically used to provide multiple paths for creating an instance of a type.
+// In value types (enumerations and structures), initializer delegation is relatively
+// straightforward. Because value types do not support inheritance, initializer delegation only
+// involves calling another initializer defined on the type.
+
+//For value types, such as structs, initialization is principally responsible for ensuring that all the instance’s stored properties have been initialized and given appropriate values.
+//That statement is true for classes as well, but class initialization is a bit more complicated due to classes' inheritance relationships. It can be thought of as unfolding in two sequential phases.
+//In the first phase, a class’s designated initializer is eventually called (either directly or by delegation from a convenience initializer). At this point, all the properties declared on the class are initialized with appropriate values inside the designated initializer’s definition.
+//Next, a designated initializer delegates up to its superclass’s designated initializer. The designated initializer on the superclass then ensures that all its own stored properties are initialized with appropriate values, which is a process that continues until the class at the top of the inheritance chain is reached. The first phase is now complete.
+//The second phase begins, providing an opportunity for a class to further customize the values held by its stored properties. For example, a designated initializer can modify properties on self after it calls to the superclass’s designated initializer. Designated initializers can also call instance methods on self. Finally, initialization reenters the convenience initializer, providing it with an opportunity to perform any customization on the instance.
+//The instance is fully initialized after these two phases, and all its properties and methods are available for use.
