@@ -4,12 +4,18 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>16. Command-Line Utilities (Playground).xcscheme</key>
+		<key>WordFinderTool.xcscheme_^#shared#^_</key>
 		<dict>
-			<key>isShown</key>
-			<false/>
 			<key>orderHint</key>
 			<integer>0</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>5DA232FD2922E6B700CFADAC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
