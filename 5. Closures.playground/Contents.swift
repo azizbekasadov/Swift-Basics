@@ -179,3 +179,49 @@ func remove(_ character: Character, from string: String) -> String {
     return string.filter { $0 != character }
 }
 let britishGreeting = remove("H", from: "Hello, World!")
+
+func add(_ a: Int, _ b: Int, _ action: (Int) -> Void) {
+    action(a + b)
+}
+
+add(4, 6) { (res) in
+    print(res)
+}
+
+// MARK: @escaping
+// In Swift, a closure marked with @escaping means the closure can outlive the scope of the block of code it is passed into.
+// In a sense, @escaping tells the closure to “stay up even after the surrounding function is gone”
+// However, this default behavior of a closure can be an issue when dealing with asynchronous code.
+// In an asynchronous function, you might not want to execute the closure right away. Instead, you want to wait for the asynchronous task to complete before calling a function.
+//This means the closure can stay around to catch a network request-response that arrives later.
+
+//To make a closure escaping, use the @escaping keyword modifier in front of the closure type.
+func howAreYou(_ responseHandler: @escaping (String) -> Void) {
+    print("Hey, how are you?") // you ask how are you
+  
+    // Simulating how it takes 2 seconds for your friend to answer:
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2, execute: {
+        responseHandler("Hi, I'm doing really good.")
+    })
+  
+    print("Responding takes a while...")
+}
+
+howAreYou({ friendResponse in
+    print(friendResponse) // print the response that arrives later
+})
+
+//When Are Escaping Closures Actually Useful
+//Escaping closures are useful whenever you want the closure to be able to outlive the function’s scope from where you are calling it.
+//
+//A great example is when dealing with network requests.
+//
+//When fetching data over a server, it takes a while for a network request to complete, and thus, the response to arrive.
+//
+//To perform actions on the response, you need to wait for it to arrive.
+//
+//To make a closure wait for the data, it has to be able to outlive the function’s scope where it is called.
+//
+//To do this, you need to use an escaping closure.
+//
+//To perform actions on the response, you need to
